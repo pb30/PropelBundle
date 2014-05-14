@@ -185,10 +185,14 @@ abstract class AbstractCommand extends ContainerAwareCommand
         array_unshift($parameters, $this->getName());
 
         // merge the default parameters
-        $parameters = array_merge(array(
-            '--input-dir'   => $this->cacheDir,
-            '--verbose'     => $input->getOption('verbose'),
-        ), $parameters);
+        $parameters = array_merge(
+            array(
+                '--input-dir'   => $this->cacheDir,
+                '--output-dir'  => $this->cacheDir,
+                '--verbose'     => $input->getOption('verbose'),
+            ),
+            $parameters
+        );
 
         if ($input->hasOption('platform')) {
             $parameters['--platform'] = $input->getOption('platform');

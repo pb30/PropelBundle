@@ -46,8 +46,9 @@ class SqlBuildCommand extends WrappedCommand
      */
     protected function getSubCommandArguments(InputInterface $input)
     {
+
+
         return array(
-            '--output-dir'  => $this->getCacheDir(),
             '--connection'  => $this->getConnections($input->getOption('connection')),
         );
     }

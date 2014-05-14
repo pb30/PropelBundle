@@ -27,7 +27,8 @@ class SqlInsertCommand extends WrappedCommand
             ->setName('propel:sql:insert')
             ->setDescription('Insert SQL statements')
             ->addOption('connection', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore')
-        ;
+            ->addOption('output-dir', null, InputOption::VALUE_REQUIRED, 'Directory to output SQL files to')
+            ;
     }
 
     /**

@@ -50,11 +50,56 @@ abstract class WrappedCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $params = $this->getSubCommandArguments($input);
+        $buildProperties = $this->getBuildProperties();
+        $params = $this->getSubCommandArguments($input, $buildProperties);
+
         $command = $this->createSubCommandInstance();
 
         $this->setupBuildTimeFiles();
 
         return $this->runCommand($command, $params, $input, $output);
+    }
+
+    /**
+     * Retrieve the Propel build_properties values
+     *
+     * @return array
+     */
+    private function getBuildProperties()
+    {
+        $buildProperties = $this->getContainer()->getParameter('propel.build_properties');
+        if (!is_array($buildProperties)) {
+            $buildProperties = array();
+        }
+        return $buildProperties;
+    }
+
+    /**
+     * Get parameters affected by build_properties
+     *
+     * Inspects the build properties that have been set in the
+     * application configs and sets default parameters based on
+     * settings that would be affected by build properties.
+     *
+     * @return array
+     */
+    private function getBuildPropertiesParameters()
+    {
+        $buildProperties = $this->getContainer()->getParameter('propel.build_properties');
+        $output = array();
+
+        if (array_key_exists('propel.project.dir', $buildProperties)) {
+            $output['--input-dir'] = $buildProperties['propel.schema.dir'];
+        }
+
+        if (array_key_exists('propel.schema.dir', $buildProperties)) {
+            $output['--input-dir'] = $buildProperties['propel.schema.dir'];
+        }
+
+        if (array_key_exists('propel.output.dir', $buildProperties)) {
+            $output['--output-dir'] = $buildProperties['propel.output.dir'];
+        }
+
+        return $output;
     }
 }

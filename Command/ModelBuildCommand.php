@@ -32,7 +32,8 @@ class ModelBuildCommand extends WrappedCommand
             ->setName('propel:model:build')
             ->setDescription('Build the model classes based on Propel XML schemas')
 
-            ->addOption('connection', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore')
+            ->addOption('connection', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore')            ->addOption('output', null, InputArgument::OPTIONAL, 'The directory to output models to')
+            ->addOption('output-dir', null, InputOption::VALUE_OPTIONAL, 'The directory to output models to')
             ->addArgument('bundle', InputArgument::OPTIONAL, 'The bundle to generate model classes from')
         ;
     }
@@ -50,10 +51,13 @@ class ModelBuildCommand extends WrappedCommand
      */
     protected function getSubCommandArguments(InputInterface $input)
     {
-        $outputDir = $this->getApplication()->getKernel()->getRootDir().'/../';
+        $parameters = array();
+        $outputOption = $input->getOption('output-dir');
 
-        return array(
-            '--output-dir' => $outputDir,
-        );
+        if (null !== $outputOption) {
+            $parameters['--output-dir'] = $outputOption;
+        }
+
+        return $parameters;
     }
 }
