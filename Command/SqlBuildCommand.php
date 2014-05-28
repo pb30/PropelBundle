@@ -12,6 +12,7 @@ namespace Propel\PropelBundle\Command;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Propel\Generator\Command\AbstractCommand as PropelAbstractCommand;
 
 /**
  * @author Kévin Gomez <contact@kevingomez.fr>
@@ -28,7 +29,7 @@ class SqlBuildCommand extends WrappedCommand
         $this
             ->setName('propel:sql:build')
             ->setDescription('Build SQL files')
-
+            ->addOption('platform',  null, InputOption::VALUE_REQUIRED,  'The platform', PropelAbstractCommand::DEFAULT_PLATFORM)
             ->addOption('connection', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore')
         ;
     }
@@ -46,10 +47,22 @@ class SqlBuildCommand extends WrappedCommand
      */
     protected function getSubCommandArguments(InputInterface $input)
     {
+        $parameters = array();
+        $buildProperties = $input->getOption('build.properties');
+        $connectionOption = $input->getOption('connection');
 
+        if (null !== $connectionOption) {
+            $parameters['--connection'] = $connectionOption;
+        }
 
-        return array(
-            '--connection'  => $this->getConnections($input->getOption('connection')),
-        );
+        if (array_key_exists('propel.schema.dir', $buildProperties)) {
+            $parameters['--input-dir'] = $buildProperties['propel.schema.dir'];
+        }
+
+        if (array_key_exists('propel.sql.dir', $buildProperties)) {
+            $parameters['--output-dir'] = $buildProperties['propel.sql.dir'];
+        }
+
+        return $parameters;
     }
 }

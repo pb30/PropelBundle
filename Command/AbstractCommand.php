@@ -187,8 +187,6 @@ abstract class AbstractCommand extends ContainerAwareCommand
         // merge the default parameters
         $parameters = array_merge(
             array(
-                '--input-dir'   => $this->cacheDir,
-                '--output-dir'  => $this->cacheDir,
                 '--verbose'     => $input->getOption('verbose'),
             ),
             $parameters

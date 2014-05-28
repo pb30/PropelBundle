@@ -41,7 +41,7 @@ abstract class WrappedCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->addOption('platform',  null, InputOption::VALUE_REQUIRED,  'The platform', BaseCommand::DEFAULT_PLATFORM)
+            ->addOption('build.properties', null, InputOption::VALUE_OPTIONAL, 'Build Properties (Do Not Use)', [])
         ;
     }
 
@@ -51,7 +51,8 @@ abstract class WrappedCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $buildProperties = $this->getBuildProperties();
-        $params = $this->getSubCommandArguments($input, $buildProperties);
+        $input->setOption('build.properties', $buildProperties);
+        $params = $this->getSubCommandArguments($input);
 
         $command = $this->createSubCommandInstance();
 
@@ -74,32 +75,13 @@ abstract class WrappedCommand extends AbstractCommand
         return $buildProperties;
     }
 
-    /**
-     * Get parameters affected by build_properties
-     *
-     * Inspects the build properties that have been set in the
-     * application configs and sets default parameters based on
-     * settings that would be affected by build properties.
-     *
-     * @return array
-     */
-    private function getBuildPropertiesParameters()
+    protected function getDefaultConnection()
     {
-        $buildProperties = $this->getContainer()->getParameter('propel.build_properties');
-        $output = array();
+        $container = $this->getContainer();
+        $connectionName = $container->getParameter('propel.dbal.default_connection');
+        $propelConfiguration = $container->getParameter('propel.configuration');
+        $connection = $propelConfiguration[$connectionName];
 
-        if (array_key_exists('propel.project.dir', $buildProperties)) {
-            $output['--input-dir'] = $buildProperties['propel.schema.dir'];
-        }
-
-        if (array_key_exists('propel.schema.dir', $buildProperties)) {
-            $output['--input-dir'] = $buildProperties['propel.schema.dir'];
-        }
-
-        if (array_key_exists('propel.output.dir', $buildProperties)) {
-            $output['--output-dir'] = $buildProperties['propel.output.dir'];
-        }
-
-        return $output;
+        return $connection;
     }
 }

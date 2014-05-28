@@ -23,10 +23,12 @@ class SqlInsertCommand extends WrappedCommand
      */
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('propel:sql:insert')
             ->setDescription('Insert SQL statements')
-            ->addOption('connection', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore')
+            ->addOption('connection', null, InputOption::VALUE_OPTIONAL, 'Connection to use. Example: default, bookstore', null)
             ->addOption('output-dir', null, InputOption::VALUE_REQUIRED, 'Directory to output SQL files to')
             ;
     }
@@ -44,9 +46,29 @@ class SqlInsertCommand extends WrappedCommand
      */
     protected function getSubCommandArguments(InputInterface $input)
     {
-        return array(
-            '--connection'  => $this->getConnections($input->getOption('connection')),
-            '--sql-dir'   => $this->cacheDir,
-        );
+        $parameters = array();
+        $buildProperties = $input->getOption('build.properties');
+        $connectionOption = $input->getOption('connection');
+
+        $defaultConnection = $this->getDefaultConnection();
+
+        $parameters['--connection'] = [
+            sprintf(
+                'mainframe=%s;user=%s;password=%s;',
+                $defaultConnection['connection']['dsn'],
+                $defaultConnection['connection']['user'],
+                $defaultConnection['connection']['password']
+            )
+        ];
+
+        if (null !== $connectionOption) {
+            $parameters['--connection'] = $connectionOption;
+        }
+
+        if (array_key_exists('propel.sql.dir', $buildProperties)) {
+            $parameters['--sql-dir'] = $buildProperties['propel.sql.dir'];
+        }
+
+        return $parameters;
     }
 }
