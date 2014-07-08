@@ -61,7 +61,7 @@ class SqlInsertCommand extends WrappedCommand
             )
         ];
 
-        if (null !== $connectionOption) {
+        if (!empty($connectionOption)) {
             $parameters['--connection'] = $connectionOption;
         }
 
