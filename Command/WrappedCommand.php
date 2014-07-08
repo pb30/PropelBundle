@@ -84,4 +84,21 @@ abstract class WrappedCommand extends AbstractCommand
 
         return $connection;
     }
+
+    protected function getDefaultConnectionDsn()
+    {
+        $defaultConnection = $this->getDefaultConnection();
+
+        $connection = [
+            sprintf(
+                '%s=%s;user=%s;password=%s;',
+                $this->getContainer()->getParameter('propel.dbal.default_connection'),
+                $defaultConnection['connection']['dsn'],
+                $defaultConnection['connection']['user'],
+                $defaultConnection['connection']['password']
+            )
+        ];
+
+        return $connection;
+    }
 }

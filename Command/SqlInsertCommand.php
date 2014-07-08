@@ -50,19 +50,10 @@ class SqlInsertCommand extends WrappedCommand
         $buildProperties = $input->getOption('build.properties');
         $connectionOption = $input->getOption('connection');
 
-        $defaultConnection = $this->getDefaultConnection();
-
-        $parameters['--connection'] = [
-            sprintf(
-                'mainframe=%s;user=%s;password=%s;',
-                $defaultConnection['connection']['dsn'],
-                $defaultConnection['connection']['user'],
-                $defaultConnection['connection']['password']
-            )
-        ];
-
         if (!empty($connectionOption)) {
-            $parameters['--connection'] = $connectionOption;
+            $parameters['--connection'] = $this->getConnections($connectionOption);
+        } else {
+            $parameters['--connection'] = $this->getDefaultConnectionDsn();
         }
 
         if (array_key_exists('propel.sql.dir', $buildProperties)) {
