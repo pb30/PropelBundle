@@ -64,8 +64,8 @@ class ModelBuildCommand extends WrappedCommand
             $parameters['--input-dir'] = $buildProperties['propel.schema.dir'];
         }
 
-        if (array_key_exists('propel.output.dir', $buildProperties)) {
-            $parameters['--output-dir'] = $buildProperties['propel.output.dir'];
+        if (array_key_exists('propel.php.dir', $buildProperties)) {
+            $parameters['--output-dir'] = $buildProperties['propel.php.dir'];
         }
 
         return $parameters;

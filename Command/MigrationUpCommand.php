@@ -50,12 +50,23 @@ class MigrationUpCommand extends WrappedCommand
      */
     protected function getSubCommandArguments(InputInterface $input)
     {
-        $defaultOutputDir = $this->getApplication()->getKernel()->getRootDir().'/propel/migrations';
-
-        return array(
-            '--connection'      => $this->getConnections($input->getOption('connection')),
+        $parameters = array(
             '--migration-table' => $input->getOption('migration-table'),
-            '--output-dir'      => $input->getOption('output-dir') ?: $defaultOutputDir,
         );
+
+        $buildProperties = $input->getOption('build.properties');
+        $connectionOption = $input->getOption('connection');
+
+        if (!empty($connectionOption)) {
+            $parameters['--connection'] = $this->getConnections($connectionOption);
+        } else {
+            $parameters['--connection'] = $this->getDefaultConnectionDsn();
+        }
+
+        if (array_key_exists('propel.migration.dir', $buildProperties)) {
+            $parameters['--output-dir'] = $buildProperties['propel.migration.dir'];
+        }
+
+        return $parameters;
     }
 }
